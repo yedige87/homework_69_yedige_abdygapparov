@@ -1,12 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Homework #69</title>
 </head>
 <body>
-    <div id="result"></div>
+<input id="number1" type="text"/>
+<input id="number2" type="text"/>
+<div id="actions">
+    <button data-api="add">add</button>
+    <button data-api="subtract">subtract</button>
+    <button data-api="multiply">multiply</button>
+    <button data-api="divide">divide</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+      const numb1 = document.getElementById("number1");
+      const numb2 = document.getElementById("number2");
+      const actions = document.getElementById("actions");
+      const result = document.getElementById("result");
+
+      actions.addEventListener("click", (e) => {
+        const apiRoute = e.target.dataset.api;
+        if (apiRoute) {
+          const valueA = numb1.value;
+          const valueB = numb2.value;
+          const data = {
+            A: isNaN(+valueA) ? valueA : +valueA,
+            B: isNaN(+valueB) ? valueB : +valueB,
+          };
+
+          fetch(apiRoute, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": document.cookie.split('=')[1]
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((body) => {
+              result.style.color = "green";
+              result.innerText = body.answer;
+            })
+            .catch((err) => {
+              result.style.color = "red";
+              result.innerText = err.error || "error: 400 BadRequest";
+            });
+        }
+      });
+
+
+</script>
 </body>
 </html>
